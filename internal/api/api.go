@@ -17,6 +17,10 @@ type API struct {
 	db *database
 }
 
+func New() *API {
+	return &API{}
+}
+
 func (api *API) Get_all_by_dbname(w http.ResponseWriter, r *http.Request) {
 	bdname := r.PathValue("bdname")
 
