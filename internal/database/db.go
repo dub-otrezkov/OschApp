@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/go-sql-driver/mysql"
@@ -13,7 +12,15 @@ type MySQLdatabase struct {
 	db *sql.DB
 }
 
-func New() *MySQLdatabase {
+type BadConnection struct {
+	i string
+}
+
+func (b BadConnection) Error() string {
+	return fmt.Sprintf("failed to connect %v", b.i)
+}
+
+func New() (*MySQLdatabase, error) {
 	res := &MySQLdatabase{}
 
 	var dt struct {
@@ -26,19 +33,19 @@ func New() *MySQLdatabase {
 	var exist bool
 	dt.user, exist = os.LookupEnv("_osch_user")
 	if !exist {
-		panic("no connection 1")
+		return nil, BadConnection{i: "_osch_user"}
 	}
 	dt.passwd, exist = os.LookupEnv("_osch_passwd")
 	if !exist {
-		panic("no connection 2")
+		return nil, BadConnection{i: "_osch_passwd"}
 	}
 	dt.addr, exist = os.LookupEnv("_osch_addr")
 	if !exist {
-		panic("no connection 3")
+		return nil, BadConnection{i: "_osch_addr"}
 	}
 	dt.bdname, exist = os.LookupEnv("_osch_bdname")
 	if !exist {
-		panic("no connection 4")
+		return nil, BadConnection{i: "_osch_bdname"}
 	}
 
 	cfg := mysql.Config{
@@ -52,18 +59,18 @@ func New() *MySQLdatabase {
 	var err error
 	res.db, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return res
+	return res, nil
 }
 
-func (d *MySQLdatabase) Query(query string, args ...any) (*sql.Rows, error) {
+func (d MySQLdatabase) Query(query string, args ...any) (*sql.Rows, error) {
 	cn, err := d.db.Query(query, args...)
 	return cn, err
 }
 
-func (d *MySQLdatabase) Get_columns(bdname string) ([]string, error) {
+func (d MySQLdatabase) Get_columns(bdname string) ([]string, error) {
 	var rows *sql.Rows
 	rows, err := (*d.db).Query(fmt.Sprintf("select * from %v", bdname))
 	if err != nil {

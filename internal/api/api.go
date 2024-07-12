@@ -17,8 +17,13 @@ type API struct {
 	db *database
 }
 
-func New() *API {
-	return &API{}
+func New(db database) *API {
+	return &API{db: &db}
+}
+
+func (api *API) Init() {
+	http.HandleFunc("/api/get/{bdname}", api.Get_all_by_dbname)
+	http.Handle("/api/files/", http.StripPrefix("/api/files", http.FileServer(http.Dir("./files/"))))
 }
 
 func (api *API) Get_all_by_dbname(w http.ResponseWriter, r *http.Request) {
@@ -43,8 +48,6 @@ func (api *API) Get_all_by_dbname(w http.ResponseWriter, r *http.Request) {
 		}
 		prm += fmt.Sprintf("%v='%v'", cols[i], vl)
 	}
-
-	// fmt.Printf("cols: %v %v\n", cols, len(cols))
 
 	qry := ""
 	if len(prm) == 0 {

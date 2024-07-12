@@ -1,17 +1,28 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/dub-otrezkov/test_go/internal/api"
 	"github.com/dub-otrezkov/test_go/internal/app"
+	db "github.com/dub-otrezkov/test_go/internal/database"
+	"github.com/dub-otrezkov/test_go/internal/tasks"
 )
 
 func main() {
-	fmt.Println("work")
 
-	API := api.API.New()
+	db, err := db.New()
 
-	a := app.New(":52")
+	if err != nil {
+		panic(err)
+	}
+
+	API := api.New(db)
+	tasksapp := tasks.New()
+
+	port := ":52"
+	a := app.New(port, API, tasksapp)
+
+	log.Printf("hosted on  localhost%v\n", port)
 	a.Run()
 }
