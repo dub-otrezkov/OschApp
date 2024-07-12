@@ -17,7 +17,7 @@ func (t TasksApp) Init() {
 }
 
 func (TasksApp) tasks_list_page(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("./frontend/taskslist.html")
+	t, err := template.ParseFiles("./files/tasks/taskslist.html")
 
 	if err != nil {
 		panic(err)
@@ -30,7 +30,7 @@ func (TasksApp) tasks_list_page(w http.ResponseWriter, r *http.Request) {
 }
 
 func (TasksApp) task_page(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("./frontend/task.html")
+	t, err := template.ParseFiles("./files/tasks/task.html")
 	if err != nil {
 		panic(err)
 	}
