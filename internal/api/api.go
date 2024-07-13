@@ -15,12 +15,12 @@ type database interface {
 }
 
 type API struct {
-	db *database
+	db database
 	e  *echo.Echo
 }
 
 func New(db database) *API {
-	return &API{db: &db, e: nil}
+	return &API{db: db, e: nil}
 }
 
 func (api *API) Init(e *echo.Echo) {
@@ -35,7 +35,7 @@ func (api *API) Get_all_by_dbname(c echo.Context) error {
 
 	api.e.Logger.Printf("%v", dbname)
 
-	cols, err := (*api.db).Get_columns(dbname)
+	cols, err := api.db.Get_columns(dbname)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (api *API) Get_all_by_dbname(c echo.Context) error {
 
 	log.Println(qry)
 
-	cn, err := (*api.db).Query(qry)
+	cn, err := api.db.Query(qry)
 	if err != nil {
 		return err
 	}

@@ -76,7 +76,7 @@ func (d *MySQLdatabase) Exec(query string, args ...any) (sql.Result, error) {
 
 func (d *MySQLdatabase) Get_columns(dbname string) ([]string, error) {
 	var rows *sql.Rows
-	rows, err := (*d.db).Query(fmt.Sprintf("select * from %v", dbname))
+	rows, err := d.db.Query(fmt.Sprintf("select * from %v", dbname))
 	if err != nil {
 		return nil, err
 	}
