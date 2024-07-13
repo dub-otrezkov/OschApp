@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/dub-otrezkov/test_go/pkg/auth"
+	"github.com/dub-otrezkov/OschApp/pkg/auth"
 	"github.com/labstack/echo"
 )
 

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/dub-otrezkov/test_go/internal/api"
-	"github.com/dub-otrezkov/test_go/internal/app"
-	db "github.com/dub-otrezkov/test_go/internal/database"
-	"github.com/dub-otrezkov/test_go/internal/tasks"
-	"github.com/dub-otrezkov/test_go/pkg/auth"
+	"github.com/dub-otrezkov/OschApp/internal/api"
+	"github.com/dub-otrezkov/OschApp/internal/app"
+	db "github.com/dub-otrezkov/OschApp/internal/database"
+	"github.com/dub-otrezkov/OschApp/internal/tasks"
+	"github.com/dub-otrezkov/OschApp/pkg/auth"
 )
 
 func main() {

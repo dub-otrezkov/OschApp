@@ -1,4 +1,4 @@
-module github.com/dub-otrezkov/test_go
+module github.com/dub-otrezkov/OschApp
 // module main
 
 go 1.22.3
@@ -9,7 +9,7 @@ require (
 )
 
 require (
-	github.com/dub-otrezkov/test_go v0.0.0-20240712161656-dcbf17ebb327 // indirect
+	github.com/dub-otrezkov/OschApp v0.0.0-20240712161656-dcbf17ebb327 // indirect
 	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
