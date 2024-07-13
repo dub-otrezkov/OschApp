@@ -2,10 +2,11 @@ package api
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/labstack/echo"
 )
 
 type database interface {
@@ -15,31 +16,34 @@ type database interface {
 
 type API struct {
 	db *database
+	e  *echo.Echo
 }
 
 func New(db database) *API {
-	return &API{db: &db}
+	return &API{db: &db, e: nil}
 }
 
-func (api *API) Init() {
-	http.HandleFunc("/api/get/{bdname}", api.Get_all_by_dbname)
-	http.Handle("/api/files/", http.StripPrefix("/api/files", http.FileServer(http.Dir("./files/"))))
+func (api *API) Init(e *echo.Echo) {
+	api.e = e
+
+	api.e.GET("/api/get/:dbname", api.Get_all_by_dbname)
+	api.e.Static("/api/files", "files")
 }
 
-func (api *API) Get_all_by_dbname(w http.ResponseWriter, r *http.Request) {
-	bdname := r.PathValue("bdname")
+func (api *API) Get_all_by_dbname(c echo.Context) error {
+	dbname := c.Param("dbname")
 
-	cols, err := (*api.db).Get_columns(bdname)
+	api.e.Logger.Printf("%v", dbname)
+
+	cols, err := (*api.db).Get_columns(dbname)
 	if err != nil {
-		panic(err)
+		return err
 	}
-
-	queryParams := r.URL.Query()
 
 	prm := ""
 
 	for i := range cols {
-		vl := queryParams.Get(cols[i])
+		vl := c.QueryParam(cols[i])
 		if len(vl) == 0 {
 			continue
 		}
@@ -51,23 +55,22 @@ func (api *API) Get_all_by_dbname(w http.ResponseWriter, r *http.Request) {
 
 	qry := ""
 	if len(prm) == 0 {
-		qry = fmt.Sprintf("select * from %v", bdname)
+		qry = fmt.Sprintf("select * from %v", dbname)
 	} else {
-		qry = fmt.Sprintf("select * from %v where %v", bdname, prm)
+		qry = fmt.Sprintf("select * from %v where %v", dbname, prm)
 	}
 
 	log.Println(qry)
 
 	cn, err := (*api.db).Query(qry)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	defer cn.Close()
 
 	var mp []map[string]interface{}
 
-	// return
 	cont := make([]interface{}, len(cols))
 	var lks = make([]interface{}, len(cols))
 	for i := range cont {
@@ -78,7 +81,7 @@ func (api *API) Get_all_by_dbname(w http.ResponseWriter, r *http.Request) {
 		err = cn.Scan(lks...)
 
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		var tmp = make(map[string]interface{})
@@ -95,13 +98,11 @@ func (api *API) Get_all_by_dbname(w http.ResponseWriter, r *http.Request) {
 		mp = append(mp, tmp)
 	}
 
-	log.Printf("mp: %v\n", mp)
+	api.e.Logger.Print(mp)
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Charset", "utf-8")
-	json.NewEncoder(w).Encode(mp)
+	return c.JSON(http.StatusOK, mp)
 }

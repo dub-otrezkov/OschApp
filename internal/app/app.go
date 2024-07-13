@@ -2,17 +2,27 @@ package app
 
 import (
 	"html/template"
-	"log"
+	"io"
 	"net/http"
+
+	"github.com/labstack/echo"
 )
 
 type module interface {
-	Init()
+	Init(*echo.Echo)
 }
 
 type App struct {
 	port string
 	md   []module
+}
+
+type TR struct {
+	templates *template.Template
+}
+
+func (t *TR) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
 }
 
 func New(_port string, _md ...module) *App {
@@ -22,22 +32,18 @@ func New(_port string, _md ...module) *App {
 }
 
 func (a *App) Run() {
+	e := echo.New()
+	e.Renderer = &TR{templates: template.Must(template.ParseGlob("./files/general/*.html"))}
+
 	for _, el := range a.md {
-		el.Init()
+		el.Init(e)
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		t, err := template.ParseFiles("./files/general/index.html")
-		if err != nil {
-			panic(err)
-		}
+	e.GET("/", func(c echo.Context) error {
+		e.Logger.Printf("main page\n")
 
-		err = t.Execute(w, nil)
-
-		if err != nil {
-			panic(err)
-		}
+		return c.Render(http.StatusOK, "index.html", nil)
 	})
 
-	log.Fatal(http.ListenAndServe(a.port, nil))
+	e.Logger.Fatal(e.Start(a.port))
 }

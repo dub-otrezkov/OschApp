@@ -65,14 +65,18 @@ func New() (*MySQLdatabase, error) {
 	return res, nil
 }
 
-func (d MySQLdatabase) Query(query string, args ...any) (*sql.Rows, error) {
+func (d *MySQLdatabase) Query(query string, args ...any) (*sql.Rows, error) {
 	cn, err := d.db.Query(query, args...)
 	return cn, err
 }
 
-func (d MySQLdatabase) Get_columns(bdname string) ([]string, error) {
+func (d *MySQLdatabase) Exec(query string, args ...any) (sql.Result, error) {
+	return d.db.Exec(query, args...)
+}
+
+func (d *MySQLdatabase) Get_columns(dbname string) ([]string, error) {
 	var rows *sql.Rows
-	rows, err := (*d.db).Query(fmt.Sprintf("select * from %v", bdname))
+	rows, err := (*d.db).Query(fmt.Sprintf("select * from %v", dbname))
 	if err != nil {
 		return nil, err
 	}
