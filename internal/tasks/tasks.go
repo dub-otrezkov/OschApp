@@ -3,6 +3,7 @@ package tasks
 import (
 	"net/http"
 
+	"github.com/dub-otrezkov/test_go/pkg/auth"
 	"github.com/labstack/echo"
 )
 
@@ -17,8 +18,8 @@ func New() *TasksApp {
 func (t *TasksApp) Init(e *echo.Echo) {
 	t.e = e
 
-	t.e.GET("/tasks", t.tasks_list_page)
-	t.e.GET("/tasks/:id", t.task_page)
+	t.e.GET("/tasks", t.tasks_list_page, auth.CheckLogin)
+	t.e.GET("/tasks/:id", t.task_page, auth.CheckLogin)
 }
 
 func (TasksApp) tasks_list_page(c echo.Context) error {
