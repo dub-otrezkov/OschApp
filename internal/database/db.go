@@ -89,3 +89,52 @@ func (d *MySQLdatabase) Get_columns(dbname string) ([]string, error) {
 	}
 	return cols, nil
 }
+
+func (d *MySQLdatabase) Get_Table(dbname string, params string) ([]map[string]interface{}, error) {
+	cols, err := d.Get_columns(dbname)
+	if err != nil {
+		return nil, err
+	}
+
+	qry := fmt.Sprintf("select * from %v where %v", dbname, params)
+	if len(params) == 0 {
+		qry = fmt.Sprintf("select * from %v", dbname)
+	}
+
+	cn, err := d.db.Query(qry)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cn.Close()
+
+	var mp []map[string]interface{}
+
+	cont := make([]interface{}, len(cols))
+	var lks = make([]interface{}, len(cols))
+	for i := range cont {
+		lks[i] = &cont[i]
+	}
+
+	for cn.Next() {
+		err = cn.Scan(lks...)
+
+		if err != nil {
+			return nil, err
+		}
+
+		var tmp = make(map[string]interface{})
+
+		for j := 0; j < len(cols); j++ {
+			switch cont[j].(type) {
+			case []byte:
+				tmp[cols[j]] = string(cont[j].([]byte))
+			default:
+				tmp[cols[j]] = cont[j]
+			}
+		}
+
+		mp = append(mp, tmp)
+	}
+	return mp, nil
+}

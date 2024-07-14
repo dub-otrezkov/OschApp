@@ -18,7 +18,7 @@ func main() {
 
 	API := api.New(db)
 	tasksapp := tasks.New()
-	auth := auth.New()
+	auth := auth.New(db, "User")
 
 	port := ":52"
 	a := app.New(port, API, tasksapp, auth)

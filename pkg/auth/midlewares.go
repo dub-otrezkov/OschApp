@@ -9,7 +9,7 @@ import (
 func SetLoginHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		user, err := c.Cookie("username")
-		if err == nil {
+		if err == nil && len(user.Value) > 0 {
 			c.Request().Header.Set("username", user.Value)
 		}
 		return next(c)
@@ -18,9 +18,9 @@ func SetLoginHeader(next echo.HandlerFunc) echo.HandlerFunc {
 
 func CheckLogin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		_, err := c.Cookie("username")
+		user, err := c.Cookie("username")
 
-		if err != nil {
+		if err != nil || len(user.Value) == 0 {
 			t := func(c echo.Context) error {
 				return c.String(http.StatusUnauthorized, "auth required")
 			}
@@ -33,9 +33,11 @@ func CheckLogin(next echo.HandlerFunc) echo.HandlerFunc {
 
 func CheckNotLogin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		_, err := c.Cookie("username")
+		user, err := c.Cookie("username")
 
-		if err == nil {
+		// c.Logger().Print(user.Name)
+
+		if err == nil && len(user.Value) != 0 {
 			t := func(c echo.Context) error {
 				return c.String(http.StatusForbidden, "already authorized")
 			}
