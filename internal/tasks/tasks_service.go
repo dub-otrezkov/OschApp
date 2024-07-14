@@ -30,14 +30,28 @@ func (t *TasksApp) Init(e *echo.Echo) {
 	t.e.POST("/tasks/:id", t.makeSubmission, auth.CheckLogin)
 }
 
+func getUser(c *echo.Context) string {
+	id, err := (*c).Cookie("user_id")
+	if err != nil {
+		return ""
+	}
+	return id.Value
+}
+
 func (*TasksApp) tasksList(c echo.Context) error {
-	return c.Render(http.StatusOK, "taskslist.html", nil)
+	return c.Render(http.StatusOK, "taskslist.html", struct {
+		UserId string
+	}{
+		UserId: getUser(&c),
+	})
 }
 
 func (*TasksApp) task(c echo.Context) error {
 	return c.Render(http.StatusOK, "task.html", struct {
 		Taskid string
+		UserId string
 	}{
 		Taskid: c.Param("id"),
+		UserId: getUser(&c),
 	})
 }
