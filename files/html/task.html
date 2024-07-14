@@ -62,6 +62,13 @@
         <div id="content">
 
         </div>
+
+        <form action="/tasks/{{.Taskid}}" method="post">
+            <input type="text" name="ans" id="ans"> <label for="ans">введите ответ</label>
+            <br>
+
+            <button type="submit">отправить</button>
+        </form>
     </div>
 
 </body>

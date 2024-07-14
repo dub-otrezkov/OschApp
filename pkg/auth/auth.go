@@ -71,6 +71,7 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 	}
 
 	c.SetCookie(&http.Cookie{Name: "username", Value: c.Request().FormValue("username")})
+	c.SetCookie(&http.Cookie{Name: "user_id", Value: fmt.Sprint(cor["id"])})
 	return c.Redirect(http.StatusMovedPermanently, "/")
 }
 

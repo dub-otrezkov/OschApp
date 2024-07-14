@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/dub-otrezkov/OschApp/pkg/auth"
 	"github.com/labstack/echo"
 )
 
@@ -35,8 +34,6 @@ func New(_port string, _md ...module) *App {
 func (a *App) Run() {
 	e := echo.New()
 	e.Renderer = &TR{templates: template.Must(template.ParseGlob("./files/html/*.html"))}
-
-	e.Use(auth.SetLoginHeader)
 
 	for _, el := range a.md {
 		el.Init(e)

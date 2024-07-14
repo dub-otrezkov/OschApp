@@ -6,16 +6,6 @@ import (
 	"github.com/labstack/echo"
 )
 
-func SetLoginHeader(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		user, err := c.Cookie("username")
-		if err == nil && len(user.Value) > 0 {
-			c.Request().Header.Set("username", user.Value)
-		}
-		return next(c)
-	}
-}
-
 func CheckLogin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		user, err := c.Cookie("username")
