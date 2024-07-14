@@ -34,7 +34,7 @@ func New(_port string, _md ...module) *App {
 
 func (a *App) Run() {
 	e := echo.New()
-	e.Renderer = &TR{templates: template.Must(template.ParseGlob("./files/general/*.html"))}
+	e.Renderer = &TR{templates: template.Must(template.ParseGlob("./files/html/*.html"))}
 
 	e.Use(auth.SetLoginHeader)
 

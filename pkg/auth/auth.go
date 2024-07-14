@@ -43,7 +43,7 @@ func (*Auth) LoginPage(c echo.Context) error {
 }
 
 func (*Auth) RegisterPage(c echo.Context) error {
-	return c.Render(http.StatusOK, "login.html", nil)
+	return c.Render(http.StatusOK, "register.html", nil)
 }
 
 func (a *Auth) ProcessLogin(c echo.Context) error {
@@ -80,7 +80,7 @@ func (a *Auth) ProcessRegister(c echo.Context) error {
 
 	c.Logger().Print(username, password)
 
-	a.db.Exec(fmt.Sprintf("insert into %v (login, password) values ('%v', '%v')", a.users_db_name, username, password))
+	a.db.Exec(fmt.Sprintf("insert into %v (login, password) values (%v, %v)", a.users_db_name, username, password))
 
 	return a.ProcessLogin(c)
 }

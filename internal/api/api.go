@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -9,7 +8,6 @@ import (
 )
 
 type database interface {
-	Query(query string, args ...any) (*sql.Rows, error)
 	Get_Table(dbname string, params string) ([]map[string]interface{}, error)
 }
 

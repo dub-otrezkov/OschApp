@@ -18,3 +18,5 @@ function Process() {
         }
     }
 }
+
+window.onload = Process;
