@@ -9,7 +9,6 @@ import (
 )
 
 type database interface {
-	Query(query string, args ...any) (*sql.Rows, error)
 	Exec(query string, args ...any) (sql.Result, error)
 	Get_Table(dbname string, qry string) ([]map[string]interface{}, error)
 }
@@ -39,11 +38,11 @@ func (a *Auth) Init(e *echo.Echo) {
 	e.POST("/exit", a.Exit, CheckLogin)
 }
 
-func (Auth) LoginPage(c echo.Context) error {
+func (*Auth) LoginPage(c echo.Context) error {
 	return c.Render(http.StatusOK, "login.html", nil)
 }
 
-func (Auth) RegisterPage(c echo.Context) error {
+func (*Auth) RegisterPage(c echo.Context) error {
 	return c.Render(http.StatusOK, "login.html", nil)
 }
 

@@ -1,5 +1,4 @@
 function Process() {
-    // var d = document.getElementById("userdata");
     var d = document.getElementById("userdata");
     d.innerHTML =  `not authorized <a href="/login">войти</a> / <a href="/register">зарегистрироваться</a>`;
 

@@ -74,28 +74,7 @@ func (d *MySQLdatabase) Exec(query string, args ...any) (sql.Result, error) {
 	return d.db.Exec(query, args...)
 }
 
-func (d *MySQLdatabase) Get_columns(dbname string) ([]string, error) {
-	var rows *sql.Rows
-	rows, err := d.db.Query(fmt.Sprintf("select * from %v", dbname))
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var cols []string
-	cols, err = rows.Columns()
-	if err != nil {
-		return nil, err
-	}
-	return cols, nil
-}
-
 func (d *MySQLdatabase) Get_Table(dbname string, params string) ([]map[string]interface{}, error) {
-	cols, err := d.Get_columns(dbname)
-	if err != nil {
-		return nil, err
-	}
-
 	qry := fmt.Sprintf("select * from %v where %v", dbname, params)
 	if len(params) == 0 {
 		qry = fmt.Sprintf("select * from %v", dbname)
@@ -105,10 +84,14 @@ func (d *MySQLdatabase) Get_Table(dbname string, params string) ([]map[string]in
 	if err != nil {
 		return nil, err
 	}
-
 	defer cn.Close()
 
 	var mp []map[string]interface{}
+
+	cols, err := cn.Columns()
+	if err != nil {
+		return nil, err
+	}
 
 	cont := make([]interface{}, len(cols))
 	var lks = make([]interface{}, len(cols))

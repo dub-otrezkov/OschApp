@@ -40,13 +40,20 @@
         }
 
     </script>
+
+    <script src="/api/files/general/drawusername.js"></script>
 </head>
 <body>
     <script>
 
+        window.onload = Process;
         displaytask("/api/get/Tasks?id={{.Taskid}}");
 
     </script>
+
+    <div class="section">
+        <div id="userdata"></div>
+    </div>
 
     <div class="section" id="header">
         <a href="/tasks">назад</a>
