@@ -117,7 +117,7 @@ header {
     margin-bottom: 2%;
 }
 
-#tasklink {
+.tasklink {
     display: block;
     width: 100%;
     color: #000000;
@@ -126,4 +126,8 @@ header {
 
 #tasklink:hover {
     color: blue;
+}
+
+#ok_task {
+    background-color: rgb(212, 255, 212);
 }
