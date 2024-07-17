@@ -1,5 +1,3 @@
-"use strict"
-
 async function combinePromises(...funcs) {
     const results = await Promise.all(funcs.map(func => func()));
     console.log(results)

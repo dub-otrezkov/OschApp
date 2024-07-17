@@ -7,36 +7,59 @@
 
 
     <script>
-        function displaytask(apiUrl) {
-            fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) {
-                throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
 
-                var tsk = data[0];
-                console.log(tsk);
-                var cont = document.getElementById("content");
+        var cor_ans = "";
 
-                var header = document.getElementById("name");
-                header.innerHTML = `задача #${tsk["id"]} (тип ${tsk["type"]})`;
+        async function displaytask(apiUrl) {
 
-                fetch(`/api/files/content/${tsk.text}`)
-                .then((res) => res.text())
-                .then((html) => {
-
-                    console.log(html);
-
-                    cont.innerHTML = html;
+            async function getTask() {
+                fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) return [];
+                    return response.json();
                 })
-                .catch((e) => console.error(e));
+                .then(data => {
+
+                    var tsk = data[0];
+                    console.log(tsk);
+                    var cont = document.getElementById("content");
+
+                    var header = document.getElementById("name");
+                    header.innerHTML = `задача #${tsk["id"]} (тип ${tsk["type"]})`;
+
+                    cor_ans = tsk["ans"];
+
+                    console.log("parsed: ", cor_ans);
+
+                    return fetch(`/api/files/content/${tsk.text}`)
+                    .then(res => res.text())
+                    .then(html => {
+                        console.log(html);
+                        cont.innerHTML = `${html} <br> <div id="subs"></div>`;
+                        
+                    })
+                })
+                .then(() => {
+                    console.log("ans: ", cor_ans);
+                })
+            }
+
+            await getTask();
+
+        }
+
+        function req() {
+            fetch("/tasks/test", {
+                method: "POST",
+                body: JSON.stringify({
+                    data: 1111,
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                },
+            }).then(response => {
+                console.log(response);
             })
-            .catch(error => {
-                console.error('Error:', error);
-            });
         }
 
     </script>
@@ -45,7 +68,7 @@
 </head>
 <body>
     <script>
-        displaytask("/api/get/Tasks?id={{.Taskid}}");
+        displaytask("/api/get/Tasks?id={{.TaskId}}");
 
     </script>
 
@@ -63,12 +86,50 @@
 
         </div>
 
-        <form action="/tasks/{{.Taskid}}" method="post">
+        <form id="submit_ans">
             <input type="text" name="ans" id="ans"> <label for="ans">введите ответ</label>
             <br>
 
             <button type="submit">отправить</button>
+
+            <div id="verdict">
+
+            </div>
         </form>
+
+        <!-- <button onclick="req()">
+            hhhh
+        </button> -->
+
+        <script>
+            document.getElementById("submit_ans").addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                document.getElementById("verdict").innerHTML = "проверяется";
+
+                let formData = new FormData(this);
+                let ans = formData.get('ans');
+
+                console.log("res: ", ans, cor_ans);
+
+                fetch("/api/submit", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        UserId: "{{.UserId}}",
+                        TaskId: "{{.TaskId}}",
+                        Status: (ans == cor_ans ? 1:0),
+                    }),
+                })
+                .then((response) => {
+                    // console.log(response.json());
+                    return response.json();
+                })
+                .then(json => {
+                    console.log(json);
+                    document.getElementById("verdict").innerHTML = json["verdict"] ? "правильный ответ" : "неправильный ответ";
+                })
+            })
+        </script>
     </div>
 
 </body>

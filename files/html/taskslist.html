@@ -10,8 +10,6 @@
     <script src="/api/files/html/drawusername.js"></script>
 
     <script>
-        "use strict"
-
         async function displaytasks(apiUrl) {
             async function getTasks() {
                 return fetch(apiUrl).then(
@@ -48,10 +46,12 @@
 
                 let oks = {};
 
-                subs.forEach(sub => {
-                    console.log(sub);
-                    oks[sub["task_id"]] = 1;
-                });
+                if (subs != null) {
+                    subs.forEach(sub => {
+                        console.log(sub);
+                        oks[sub["task_id"]] = 1;
+                    });
+                }
 
                 tasks.forEach(name => {
                     const link = document.createElement('a');

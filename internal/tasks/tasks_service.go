@@ -27,7 +27,6 @@ func (t *TasksApp) Init(e *echo.Echo) {
 
 	t.e.GET("/tasks", t.tasksList, auth.CheckLogin)
 	t.e.GET("/tasks/:id", t.task, auth.CheckLogin)
-	t.e.POST("/tasks/:id", t.makeSubmission, auth.CheckLogin)
 }
 
 func getUser(c *echo.Context) string {
@@ -48,10 +47,10 @@ func (*TasksApp) tasksList(c echo.Context) error {
 
 func (*TasksApp) task(c echo.Context) error {
 	return c.Render(http.StatusOK, "task.html", struct {
-		Taskid string
+		TaskId string
 		UserId string
 	}{
-		Taskid: c.Param("id"),
+		TaskId: c.Param("id"),
 		UserId: getUser(&c),
 	})
 }
