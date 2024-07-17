@@ -114,6 +114,8 @@ var tasksPages = {
             .then(() => {
                 console.log("ans: ", this.cor_ans);
             })
+
+            
         }
     }
 }
