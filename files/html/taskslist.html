@@ -9,73 +9,12 @@
     <script src="/api/files/html/useful.js"></script>
     <script src="/api/files/html/drawusername.js"></script>
 
-    <script>
-        async function displaytasks(apiUrl) {
-            async function getTasks() {
-                return fetch(apiUrl).then(
-                    response => {
-                        if (response.status != 200) return [];
-                        else return response.json();
-                    }
-                )
-            };
-
-            async function getSubmissions() {
-                return fetch("/api/get/Submissions?user={{.UserId}}&status=1").then(
-                    response => {
-                        if (response.status != 200) return [];
-                        else return response.json();
-                    }
-                )
-            };
-
-            combinePromises(getTasks, getSubmissions).then(res => {
-                console.log(res);
-                console.log(res["getTasks"]);
-                
-                var linksContainer = document.getElementById("linksContainer");
-
-                console.log(linksContainer);
-                linksContainer.innerHTML = "";
-
-                console.log(res);
-                console.log(res["getTasks"]);
-
-                let tasks = res["getTasks"];
-                let subs = res["getSubmissions"];
-
-                let oks = {};
-
-                if (subs != null) {
-                    subs.forEach(sub => {
-                        console.log(sub);
-                        oks[sub["task_id"]] = 1;
-                    });
-                }
-
-                tasks.forEach(name => {
-                    const link = document.createElement('a');
-                    
-                    link.textContent = `#${name["id"]} (тип ${name["type"]})`;
-                    link.className = `tasklink`;
-                    link.href = `/tasks/${name["id"]}`;
-
-                    if (oks[name["id"]] == 1) {
-                        link.id = "ok_task";
-                    }
-
-                    linksContainer.appendChild(link);
-                });
-            });
-        }
-
-        
-    </script>
-
 </head>
 <body>
     <script>
-        displaytasks("/api/get/Tasks")
+
+        tasksPages.displaytasks(document, "/api/get/Tasks", "{{.UserId}}");
+
     </script>
 
 <div class="section">
@@ -111,8 +50,8 @@
 
             console.log(name)
 
-            if (name != 0) displaytasks(`/api/get/Tasks?type=${name}`);
-            else displaytasks(`/api/get/Tasks`);
+            if (name != 0) tasksPages.displaytasks(document, `/api/get/Tasks?type=${name}`, "{{.UserId}}");
+            else tasksPages.displaytasks(document, `/api/get/Tasks`, "{{.UserId}}");
         });
     </script>
 

@@ -71,17 +71,7 @@ func (api *API) AddSubmission(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	c.Logger().Print(body)
-
-	for i := range body {
-		c.Logger().Print(string(body[i]))
-	}
-
 	err = json.Unmarshal(body, &s)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-	}
-
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
