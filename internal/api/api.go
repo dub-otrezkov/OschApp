@@ -29,6 +29,8 @@ func (api *API) Init(e *echo.Echo) {
 
 	api.e.GET("/api/get/:dbname", api.Get_all_by_dbname)
 	api.e.POST("/api/submit", api.AddSubmission)
+	api.e.POST("/api/add/:dbname", api.addObject)
+
 	api.e.Static("/api/files", "files")
 }
 
@@ -50,7 +52,7 @@ func (api *API) Get_all_by_dbname(c echo.Context) error {
 
 	mp, err := api.db.Get_Table(dbname, params)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, map[string]string{"status": err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, mp)
@@ -84,4 +86,41 @@ func (api *API) AddSubmission(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{"status": "ok", "verdict": s.Status})
+}
+
+func (api *API) addObject(c echo.Context) error {
+	dbname := c.Param("dbname")
+
+	mp := make(map[string]interface{})
+
+	body, err := io.ReadAll(c.Request().Body)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"status": err.Error()})
+	}
+
+	err = json.Unmarshal(body, &mp)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"status": err.Error()})
+	}
+
+	nms := ""
+	vls := ""
+	for key, vl := range mp {
+		if len(nms) > 0 {
+			nms += ", "
+		}
+		nms += key
+
+		if len(vls) > 0 {
+			vls += ", "
+		}
+		vls += fmt.Sprint(vl)
+	}
+
+	_, err = api.db.Exec("insert into %v (%v) values (%v)", dbname, nms, vls)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"status": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{"status": "ok", "object": mp})
 }

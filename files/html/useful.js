@@ -119,3 +119,47 @@ var tasksPages = {
         }
     }
 }
+
+var examsPage = {
+    displayExams: async function() {
+        fetch("api/get/Exam")
+        .then(response => response.json())
+        .then(json => {
+            console.log(json);
+
+            var linksContainer = document.getElementById("linksContainer");
+            json.forEach(exam => {
+
+                console.log(exam["id"]);
+                var link = document.createElement('a');
+                
+                link.textContent = `#${exam["id"]} (сложность ${exam["difficulty"]})`;
+                link.className = `tasklink`;
+                link.href = `/exams/${exam["id"]}`;
+
+
+                linksContainer.appendChild(link);
+            })
+        })
+    },
+
+    displayExam: async function(TaskId) {
+        fetch(`/api/get/Exam?id=${TaskId}`)
+        .then(response => {
+            if (response.ok) return response.json();
+            else throw response.status;
+        })
+        .then(raw => {
+            var exam = raw[0];
+
+            console.log(exam);
+
+            let tsk = exam["tasks"].split(',');
+
+            console.log(tsk);
+        })
+        .catch(err => {
+            console.error(err);
+        })
+    }
+}
