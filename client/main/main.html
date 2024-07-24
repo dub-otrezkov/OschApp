@@ -4,25 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/styles/general.css">
-    <link rel="stylesheet" href="static/styles/tasklist.css">
     <title>Document</title>
 
-    <script src="static/scripts/tasks.js"></script>
     <script src="static/scripts/userdata.js"></script>
 </head>
 <body>
     <script>
         window.onload = () => {
-            getUserData();
-
-            taskApp.getTasksList("")
+            UserData.getUserData()
             .then(res => {
-                console.log(res);
-
-                document.getElementById("links").innerHTML = res;
+                document.getElementById("userdata").appendChild(res);
             })
         };
     </script>
+
+    <div class="container">
+        <div id="userdata">
+
+        </div>
+    </div>
 
     <div class="container">
         <div id="links">

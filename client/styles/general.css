@@ -1,6 +1,7 @@
 body {
     font-family: "Fira Code";
     background-color: #1f2022;
+    color: #ddd;
 }
 
 a {
@@ -14,4 +15,5 @@ a {
     margin-right: auto;
     padding: 0%;
     padding: 0.5%;
+    margin-top: 1.5%;
 }

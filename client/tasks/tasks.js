@@ -1,7 +1,7 @@
 
 var taskApp = {
     getTasksList: async function(params, elemid) {
-        var res = "";
+        var res = document.createElement("div");
 
         await fetch("/api/get/Tasks" + params, {
             method: "GET",
@@ -16,9 +16,15 @@ var taskApp = {
             console.log(resp);
             
             for (let i = 0; i < resp.length; i++) {
-                res += `
-                    <a class="tasklink" id="${resp[i]["id"]}" href="/tasks/${resp[i]["id"]}">задача #${resp[i]["id"]}</a>
-                `;
+                let nl = document.createElement("a");
+                nl.className = "tasklink";
+                nl.id = resp[i]["id"];
+                nl.href = `/tasks/${resp[i]["id"]}`;
+                nl.innerText = `задача #${resp[i]["id"]} (тип: ${resp[i]["type"]})`;
+                res.append(nl);
+                // res += `
+                //     <a class="tasklink" id="${resp[i]["id"]}" href="/tasks/${resp[i]["id"]}">задача #${resp[i]["id"]}</a>
+                // `;
             }
 
             console.log(res);

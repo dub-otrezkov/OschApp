@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles/general.css">
+    <script src="/static/auth/auth.js"></script>
+    <title>Document</title>
+</head>
+<body>
+
+    <div class="container">
+        <form id="login">
+            <input name="login" type="text"> <label for="login">имя пользователя</label>
+            <br>
+            <input name="password" type="text"> <label for="password">пароль</label>
+            <br>
+            <button type="submit">войти</button>
+
+            <p id="response"></p>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("login").addEventListener("submit", e => {
+            e.preventDefault();
+            Login(e.target);
+        })
+    </script>
+    
+</body>
+</html>

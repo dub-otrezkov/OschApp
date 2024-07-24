@@ -12,7 +12,7 @@ func CheckLogin(next echo.HandlerFunc) echo.HandlerFunc {
 		obj, err := c.Cookie("user")
 
 		if err != nil || len(obj.Value) == 0 {
-			return c.JSON(http.StatusBadRequest, nil)
+			return c.JSON(http.StatusForbidden, nil)
 		}
 
 		return next(c)
@@ -27,7 +27,7 @@ func CheckNotLogin(next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-		return c.JSON(http.StatusBadRequest, nil)
+		return c.JSON(http.StatusForbidden, nil)
 	}
 }
 
@@ -41,7 +41,7 @@ func CheckAuthAPI(next echo.HandlerFunc) echo.HandlerFunc {
 		// c.Logger().Print(token, ok)
 
 		if !ok || len(token) == 0 {
-			return c.JSON(http.StatusBadRequest, nil)
+			return c.JSON(http.StatusForbidden, nil)
 		}
 
 		correct := os.Getenv("_osch_api_token")

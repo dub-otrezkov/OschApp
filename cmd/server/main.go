@@ -4,6 +4,7 @@ import (
 	"github.com/dub-otrezkov/OschApp/internal/api"
 	"github.com/dub-otrezkov/OschApp/internal/app"
 	db "github.com/dub-otrezkov/OschApp/internal/database"
+	"github.com/dub-otrezkov/OschApp/internal/tasks"
 	"github.com/dub-otrezkov/OschApp/pkg/auth"
 )
 
@@ -17,9 +18,10 @@ func main() {
 
 	API := api.New(db)
 	auth := auth.New(db, "User")
+	tasks := tasks.New()
 
 	port := ":52"
-	a := app.New(port, API, auth)
+	a := app.New(port, API, auth, tasks)
 
 	a.Run()
 }

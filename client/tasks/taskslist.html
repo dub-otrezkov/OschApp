@@ -5,29 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/styles/general.css">
     <link rel="stylesheet" href="static/styles/tasklist.css">
-    <title>Document</title>
-
-    <script src="static/scripts/tasks.js"></script>
+    <script src="static/tasks/tasks.js"></script>
     <script src="static/scripts/userdata.js"></script>
 </head>
 <body>
     <script>
         window.onload = () => {
-            getUserData();
+            UserData.getUserData()
+            .then(res => {
+                document.getElementById("userdata").appendChild(res);
+            })
 
             taskApp.getTasksList("")
             .then(res => {
-                console.log(res);
-
-                document.getElementById("links").innerHTML = res;
+                document.getElementById("links").innerHTML = "";
+                document.getElementById("links").appendChild(res);
             })
+
+            document.getElementById("filter").addEventListener("submit", e => {
+                e.preventDefault();
+
+                let d = new FormData(e.target);
+
+                let params = ""
+
+                if (d.get("type") != 0) params = `?type=${d.get("type")}`;
+
+                taskApp.getTasksList(params)
+                .then(res => {
+                    document.getElementById("links").innerHTML = "";
+                    document.getElementById("links").appendChild(res);
+                })
+            });
         };
     </script>
 
     <div class="container">
+        <div id="userdata">
+
+        </div>
+    </div>
+
+    <div class="container">
+        <form id="filter">
+            <input type="number" name="type" min="0" max="27" placeholder="0">
+            <label for="type">Тип задач (0 - все типы)</label>
+            <br>
+            <button type="submit">применить</button>
+        </form>
+
+        <br>
+
         <div id="links">
 
         </div>
+
     </div>
     
 
