@@ -1,0 +1,17 @@
+body {
+    font-family: "Fira Code";
+    background-color: #1f2022;
+}
+
+a {
+    text-decoration: none;
+}
+
+.container {
+    width: 50%;
+    background-color: #292d2e;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0%;
+    padding: 0.5%;
+}

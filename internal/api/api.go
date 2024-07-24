@@ -7,12 +7,13 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/dub-otrezkov/OschApp/pkg/auth"
 	"github.com/labstack/echo"
 )
 
 type database interface {
 	Exec(query string, args ...any) (sql.Result, error)
-	Get_Table(dbname string, params string) ([]map[string]interface{}, error)
+	GetTable(dbname string, params string) ([]map[string]interface{}, error)
 }
 
 type API struct {
@@ -27,14 +28,14 @@ func New(db database) *API {
 func (api *API) Init(e *echo.Echo) {
 	api.e = e
 
-	api.e.GET("/api/get/:dbname", api.Get_all_by_dbname)
-	api.e.POST("/api/submit", api.AddSubmission)
-	api.e.POST("/api/add/:dbname", api.addObject)
+	api.e.GET("/api/get/:dbname", api.GetTable, auth.CheckAuthAPI)
+	api.e.POST("/api/submit", api.AddSubmission, auth.CheckAuthAPI)
+	api.e.POST("/api/add/:dbname", api.addObject, auth.CheckAuthAPI)
 
-	api.e.Static("/api/files", "files")
+	api.e.Static("/static", "client")
 }
 
-func (api *API) Get_all_by_dbname(c echo.Context) error {
+func (api *API) GetTable(c echo.Context) error {
 	dbname := c.Param("dbname")
 
 	api.e.Logger.Printf("%v", dbname)
@@ -50,7 +51,7 @@ func (api *API) Get_all_by_dbname(c echo.Context) error {
 
 	c.Logger().Print(params)
 
-	mp, err := api.db.Get_Table(dbname, params)
+	mp, err := api.db.GetTable(dbname, params)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"status": err.Error()})
 	}

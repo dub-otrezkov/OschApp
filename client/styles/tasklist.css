@@ -1,0 +1,12 @@
+.tasklink {
+    display: block;
+    color: #ddd;
+    margin-top: 0.5%;
+    padding: 1%;
+    background-color: #1f2022;
+}
+
+.tasklink:hover {
+    background-color: #ddd;
+    color: #292d2e;
+}
