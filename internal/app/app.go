@@ -33,16 +33,14 @@ func New(_port string, _md ...module) *App {
 
 func (a *App) Run() {
 	e := echo.New()
-	e.Renderer = &TR{templates: template.Must(template.ParseGlob("./files/html/*.html"))}
+	e.Renderer = &TR{templates: template.Must(template.ParseGlob("./client/**/*.html"))}
 
 	for _, el := range a.md {
 		el.Init(e)
 	}
 
 	e.GET("/", func(c echo.Context) error {
-		e.Logger.Printf("main page\n")
-
-		return c.Render(http.StatusOK, "index.html", nil)
+		return c.Render(http.StatusOK, "main.html", nil)
 	})
 
 	e.Logger.Fatal(e.Start(a.port))

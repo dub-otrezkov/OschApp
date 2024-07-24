@@ -74,7 +74,7 @@ func (d *MySQLdatabase) Exec(query string, args ...any) (sql.Result, error) {
 	return d.db.Exec(query, args...)
 }
 
-func (d *MySQLdatabase) Get_Table(dbname string, params string) ([]map[string]interface{}, error) {
+func (d *MySQLdatabase) GetTable(dbname string, params string) ([]map[string]interface{}, error) {
 	qry := fmt.Sprintf("select * from %v where %v", dbname, params)
 	if len(params) == 0 {
 		qry = fmt.Sprintf("select * from %v", dbname)
