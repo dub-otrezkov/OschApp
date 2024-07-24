@@ -33,6 +33,7 @@ func (api *API) Init(e *echo.Echo) {
 	api.e.POST("/api/add/:dbname", api.addObject, auth.CheckAuthAPI)
 
 	api.e.Static("/static", "client")
+	api.e.Static("/files", "files")
 }
 
 func (api *API) GetTable(c echo.Context) error {

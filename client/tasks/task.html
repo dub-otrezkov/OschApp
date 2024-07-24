@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles/general.css">
+    <link rel="stylesheet" href="/static/styles/tasklist.css">
+    <script src="/static/tasks/tasks.js"></script>
+    <script src="/static/scripts/userdata.js"></script>
+</head>
+<body>
+    <script>
+        window.onload = () => {
+            UserData.getUserData()
+            .then(res => {
+                document.getElementById("userdata").appendChild(res);
+            })
+
+            taskApp.getTaskObject(`{{.Id}}`)
+            .then(res => {
+                document.getElementById("task").innerHTML = "";
+                document.getElementById("task").appendChild(res);
+            })
+        };
+    </script>
+
+    <div class="container">
+        <div id="userdata">
+
+        </div>
+    </div>
+
+    <div class="container">
+        <a href="/tasks">назад</a>
+
+        <div id="task">
+
+        </div>
+    </div>
+    
+
+</body>
+</html>
