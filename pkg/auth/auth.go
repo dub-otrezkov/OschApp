@@ -86,6 +86,11 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 		Value: qr.Username,
 	})
 
+	c.SetCookie(&http.Cookie{
+		Name:  "userId",
+		Value: fmt.Sprint(cor["id"]),
+	})
+
 	return c.JSON(http.StatusOK, nil)
 }
 

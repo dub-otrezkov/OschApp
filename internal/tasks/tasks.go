@@ -17,6 +17,8 @@ func New() *TaskApp {
 func (t *TaskApp) Init(e *echo.Echo) {
 	e.GET("/tasks", t.taskslistPage, auth.CheckLogin)
 	e.GET("/tasks/:id", t.taskPage, auth.CheckLogin)
+
+	e.GET("/exams", t.examslistPage, auth.CheckLogin)
 }
 
 func (*TaskApp) taskslistPage(c echo.Context) error {
@@ -29,4 +31,8 @@ func (*TaskApp) taskPage(c echo.Context) error {
 	}{
 		Id: c.Param("id"),
 	})
+}
+
+func (*TaskApp) examslistPage(c echo.Context) error {
+	return c.Render(http.StatusOK, "examslist.html", nil)
 }

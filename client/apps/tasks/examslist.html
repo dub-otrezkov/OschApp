@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/styles/general.css">
+    <link rel="stylesheet" href="static/apps/tasks/tasklist.css">
+    <script src="static/apps/tasks/tasks.js"></script>
+    <script src="static/scripts/userdata.js"></script>
+</head>
+<body>
+    <script>
+        window.onload = () => {
+            UserData.getUserData()
+            .then(res => {
+                document.getElementById("userdata").appendChild(res);
+            })
+            
+            examApp.getExamsList()
+            .then(res => {
+                document.getElementById("links").append(res);
+            })
+        };
+    </script>
+
+    <div class="container">
+        <div id="userdata">
+
+        </div>
+        <br>
+        <a href="/">на главную</a>
+    </div>
+
+    <div class="container">
+
+        <h2>пробники</h2>
+
+        <div id="links">
+
+        </div>
+    </div>
+    
+
+</body>
+</html>

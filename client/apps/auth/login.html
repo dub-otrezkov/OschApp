@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/styles/general.css">
-    <script src="/static/auth/auth.js"></script>
+    <script src="/static/apps/auth/auth.js"></script>
     <title>Document</title>
 </head>
 <body>
@@ -15,7 +15,7 @@
             <br>
             <input name="password" type="text"> <label for="password">пароль</label>
             <br>
-            <button type="submit">зарегистрироваться</button>
+            <button type="submit">войти</button>
 
             <p id="response"></p>
         </form>
@@ -24,7 +24,7 @@
     <script>
         document.getElementById("login").addEventListener("submit", e => {
             e.preventDefault();
-            Register(e.target);
+            Login(e.target);
         })
     </script>
     

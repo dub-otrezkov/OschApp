@@ -33,7 +33,7 @@ func New(_port string, _md ...module) *App {
 
 func (a *App) Run() {
 	e := echo.New()
-	e.Renderer = &TR{templates: template.Must(template.ParseGlob("./client/**/*.html"))}
+	e.Renderer = &TR{templates: template.Must(template.ParseGlob("./client/**/**/*.html"))}
 
 	for _, el := range a.md {
 		el.Init(e)

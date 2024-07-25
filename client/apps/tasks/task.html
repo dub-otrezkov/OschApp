@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/styles/general.css">
-    <link rel="stylesheet" href="/static/styles/tasklist.css">
-    <script src="/static/tasks/tasks.js"></script>
+    <link rel="stylesheet" href="/static/apps/tasks/tasklist.css">
+    <script src="/static/apps/tasks/tasks.js"></script>
     <script src="/static/scripts/userdata.js"></script>
 </head>
 <body>
@@ -15,8 +15,8 @@
             .then(res => {
                 document.getElementById("userdata").appendChild(res);
             })
-
-            taskApp.getTaskObject(`{{.Id}}`)
+            
+            taskApp.getTaskObject(`{{.Id}}`, UserData.getCookie)
             .then(res => {
                 document.getElementById("task").innerHTML = "";
                 document.getElementById("task").appendChild(res);
@@ -28,6 +28,8 @@
         <div id="userdata">
 
         </div>
+        <br>
+        <a href="/">на главную</a>
     </div>
 
     <div class="container">

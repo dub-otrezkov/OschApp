@@ -65,7 +65,7 @@ func (api *API) AddSubmission(c echo.Context) error {
 	type Submission struct {
 		UserId string `json:"UserId"`
 		TaskId string `json:"TaskId"`
-		Status int    `json:"Status"`
+		Answer string `json:"Answer"`
 	}
 
 	s := Submission{}
@@ -82,12 +82,21 @@ func (api *API) AddSubmission(c echo.Context) error {
 
 	c.Logger().Print(s)
 
-	_, err = api.db.Exec(fmt.Sprintf("insert into Submissions (task_id, user, status) values (%v, %v, %v)", s.TaskId, s.UserId, s.Status))
+	verdict := 0
+
+	if cor, err := api.db.GetTable("Tasks", fmt.Sprintf("id=%v", s.TaskId)); err == nil && cor[0]["ans"] == s.Answer {
+
+		verdict = 1
+	}
+
+	c.Logger().Print(fmt.Sprintf("insert into Submissions (task_id, user, status) values (%v, %v, %v)", s.TaskId, s.UserId, verdict))
+
+	_, err = api.db.Exec(fmt.Sprintf("insert into Submissions (task_id, user, status) values (%v, %v, %v)", s.TaskId, s.UserId, verdict))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, map[string]any{"status": "ok", "verdict": s.Status})
+	return c.JSON(http.StatusOK, map[string]any{"status": "ok", "verdict": verdict})
 }
 
 func (api *API) addObject(c echo.Context) error {
