@@ -13,6 +13,11 @@ button, input {
     margin-bottom: 3px;
 }
 
+button:hover {
+    background-color: #ddd;
+    color: #1f2022;
+}
+
 a {
     color: #ddd;
     text-decoration: none;

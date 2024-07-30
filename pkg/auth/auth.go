@@ -12,16 +12,16 @@ import (
 
 type database interface {
 	Exec(query string, args ...any) (sql.Result, error)
-	GetTable(dbname string, qry string) ([]map[string]interface{}, error)
+	GetUser(login string) ([]map[string]interface{}, error)
+	RegisterUser(login string, password string) error
 }
 
 type Auth struct {
-	users_db_name string
-	db            database
+	db database
 }
 
-func New(db database, user_db_name string) *Auth {
-	return &Auth{db: db, users_db_name: user_db_name}
+func New(db database) *Auth {
+	return &Auth{db: db}
 }
 
 func (a *Auth) Init(e *echo.Echo) {
@@ -50,6 +50,8 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
+		c.Logger().Print(err.Error())
+
 		return c.JSON(http.StatusBadRequest, nil)
 	}
 	qr := AuthQuery{}
@@ -62,13 +64,16 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 	}
 
 	if err != nil {
+		c.Logger().Print(err.Error())
+
 		return c.JSON(http.StatusBadRequest, nil)
 	}
 
-	dt, err := a.db.GetTable(a.users_db_name, fmt.Sprintf(`login='%v'`, qr.Username))
+	// dt, err := a.db.GetTable(a.users_db_name, fmt.Sprintf(`login='%v'`, qr.Username))
+	dt, err := a.db.GetUser(qr.Username)
 	if err != nil {
-		c.Logger().Print(err)
-		return err
+		c.Logger().Print(err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
 	if len(dt) == 0 {
@@ -105,9 +110,14 @@ func (a *Auth) ProcessRegister(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "err")
 	}
 
-	a.db.Exec(fmt.Sprintf("insert into %v (login, password) values (%v, %v)", a.users_db_name, qr.Username, qr.Password))
+	// a.db.Exec(fmt.Sprintf("insert into %v (login, password) values (%v, %v)", a.users_db_name, qr.Username, qr.Password))
+	err = a.db.RegisterUser(qr.Username, qr.Password)
 
-	return a.ProcessLogin(c)
+	if err == nil {
+		return a.ProcessLogin(c)
+	}
+
+	return c.JSON(http.StatusBadRequest, err.Error())
 }
 
 func (a *Auth) ProcessExit(c echo.Context) error {

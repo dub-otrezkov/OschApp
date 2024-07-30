@@ -19,6 +19,7 @@ func (t *TaskApp) Init(e *echo.Echo) {
 	e.GET("/tasks/:id", t.taskPage, auth.CheckLogin)
 
 	e.GET("/exams", t.examslistPage, auth.CheckLogin)
+	e.GET("/exams/:id", t.examPage, auth.CheckLogin)
 }
 
 func (*TaskApp) taskslistPage(c echo.Context) error {
@@ -35,4 +36,12 @@ func (*TaskApp) taskPage(c echo.Context) error {
 
 func (*TaskApp) examslistPage(c echo.Context) error {
 	return c.Render(http.StatusOK, "examslist.html", nil)
+}
+
+func (*TaskApp) examPage(c echo.Context) error {
+	return c.Render(http.StatusOK, "exam.html", struct {
+		Id string
+	}{
+		Id: c.Param("id"),
+	})
 }

@@ -1,7 +1,5 @@
 
 var taskApp = {
-    cor_ans: "",
-
     getTasksList: async function(params) {
         var res = document.createElement("div");
 
@@ -18,6 +16,9 @@ var taskApp = {
             if (resp == null) return res;
             
             for (let i = 0; i < resp.length; i++) {
+                // console.log(resp[i]);
+
+
                 let nl = document.createElement("a");
                 nl.className = "tasklink";
                 nl.id = resp[i]["id"];
@@ -32,7 +33,25 @@ var taskApp = {
         return res;
     },
 
-    getTaskObject: async function(id, GetCookie) {
+    checkTask: async function (taskId, userId, d) {
+        return await fetch("/api/submit", {
+            method: "POST",
+            headers: {
+                Token: "kkajka",
+            },
+            body: JSON.stringify({
+                TaskId: taskId,
+                Answer: d.get("ans"),
+                SessionId: `-${userId}`,
+            }),
+        })
+        .then(resp => {
+            if (resp.ok) return resp.json();
+            else return null;
+        })
+    },
+    
+    getTask: async function(id, GetCookie, checker) {
         var res = document.createElement("div");
 
         let file = await fetch(`/api/get/Tasks?id=${id}`, {
@@ -50,8 +69,6 @@ var taskApp = {
             let head = document.createElement("h2");
             head.innerText = `задача #${id} (тип: ${task["type"]})`;
             res.append(head);
-
-            this.cor_ans = task["ans"];
 
             return task["text"];
         })
@@ -92,25 +109,13 @@ var taskApp = {
 
             let d = new FormData(e.target);
 
-            fetch("/api/submit", {
-                method: "POST",
-                headers: {
-                    Token: "kkajka",
-                },
-                body: JSON.stringify({
-                    TaskId: id,
-                    UserId: userId,
-                    Answer: d.get("ans"),
-                }),
-            })
-            .then(resp => {
-                if (resp.ok) return resp.json();
-                else return null;
-            })
+            checker(id, userId, d)
             .then(resp => {
                 if (resp == null) return;
                 if (resp["verdict"] == 0) vrd.innerHTML = "неправильный ответ";
-                else vrd.innerHTML = "правильный ответ";
+                else if (resp["verdict"] == 1) vrd.innerHTML = "правильный ответ";
+                else if (resp["verdict"] == 2) vrd.innerHTML = "ответ записан";
+                else vrd.innerHTML = "сервис временно не работает. повторите позже";
             })
         })
 
@@ -124,7 +129,7 @@ var examApp = {
     getExamsList: async function () {
         let res = document.createElement("div");
 
-        await fetch("/api/get/Exam", {
+        await fetch("/api/get/Exams", {
             method: "GET",
             headers: {
                 Token: "kkajka",
@@ -153,6 +158,73 @@ var examApp = {
             return;
         })
 
+        return res;
+    },
+
+    showTask: function (id, len) {
+        for (let i = 1; i < len + 1; i++) {
+            document.getElementById(`sttr${i}`).className = "";
+            document.getElementById(`task${i}`).style.display = "none";
+        }
+        document.getElementById(`sttr${id}`).className = "chosen_btn";
+        document.getElementById(`task${id}`).style.display = "block";
+    },
+
+    storeSubmit: async function (taskId, userId, d) {
+        return await fetch("/api/esubmit", {
+            method: "POST",
+            headers: {
+                Token: "kkajka",
+            },
+            body: JSON.stringify({
+                TaskId: toString(taskId),
+                UserId: userId,
+                Answer: d.get("ans"),
+                SessionId: "0",
+            }),
+        })
+        .then(resp => {
+            if (resp.ok) return resp.json();
+            else return null;
+        })
+    },
+
+    getExam: async function (id, GetCookie) {
+        let res = document.createElement("div");
+
+        let exam = (await fetch(`/api/get/Tasklist?examId=${id}`, {
+            method: "GET",
+            headers: {
+                Token: "kkajka",
+            },
+        })
+        .then(resp => {
+            if (resp.ok) return resp.json();
+            else return [{"tasks": ""}];
+        }))
+
+        console.log(exam);
+
+        let btns = document.createElement("div");
+
+        res.append(btns);
+
+        for (let i = 0; i < exam.length; i++) {
+            let sttr = document.createElement("button");
+            sttr.innerText = i + 1;
+            sttr.id = `sttr${i + 1}`;
+
+            // sttr.onclick = ;
+            sttr.onclick = function() {examApp.showTask(i + 1, exam.length)};
+
+            btns.append(sttr);
+
+            let task = await taskApp.getTask(exam[i]["taskId"], GetCookie, examApp.storeSubmit);
+
+            task.id = `task${i + 1}`;
+
+            res.append(task);
+        }
         return res;
     }
 }

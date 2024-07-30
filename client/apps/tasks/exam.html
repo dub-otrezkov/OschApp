@@ -16,10 +16,13 @@
                 document.getElementById("userdata").appendChild(res);
             })
             
-            taskApp.getTask(`{{.Id}}`, UserData.getCookie, taskApp.checkTask)
-            .then(res => {
-                document.getElementById("task").innerHTML = "";
-                document.getElementById("task").appendChild(res);
+            examApp.getExam("{{.Id}}", UserData.getCookie)
+            .then(resp => {
+                document.getElementById("exam").innerHTML = "";
+                document.getElementById("exam").append(resp);
+            })
+            .then(() => {
+                document.getElementById("sttr1").click();
             })
         };
     </script>
@@ -33,9 +36,11 @@
     </div>
 
     <div class="container">
-        <a href="/tasks">назад</a>
+        <a href="/exams">назад</a>
 
-        <div id="task">
+        <h2>пробник</h2>
+
+        <div id="exam">
 
         </div>
     </div>

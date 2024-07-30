@@ -11,6 +11,11 @@
     color: #292d2e;
 }
 
+.chosen_btn {
+    background-color: #1e325a;
+    color: #ddd;
+}
+
 h2 {
     margin-top: 0;
 }

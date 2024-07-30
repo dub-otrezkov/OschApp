@@ -29,11 +29,20 @@ func (api *API) Init(e *echo.Echo) {
 	api.e = e
 
 	api.e.GET("/api/get/:dbname", api.GetTable, auth.CheckAuthAPI)
-	api.e.POST("/api/submit", api.AddSubmission, auth.CheckAuthAPI)
-	api.e.POST("/api/add/:dbname", api.addObject, auth.CheckAuthAPI)
+	api.e.POST("/api/submit", api.Submit, auth.CheckAuthAPI)
 
 	api.e.Static("/static", "client")
 	api.e.Static("/files", "files")
+}
+
+func getReqBody(c *echo.Context, r any) error {
+	body, err := io.ReadAll((*c).Request().Body)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(body, r)
+
+	return err
 }
 
 func (api *API) GetTable(c echo.Context) error {
@@ -50,7 +59,7 @@ func (api *API) GetTable(c echo.Context) error {
 		params += fmt.Sprintf(`%v=%v`, k, v[0])
 	}
 
-	c.Logger().Print(params)
+	// c.Logger().Print(params)
 
 	mp, err := api.db.GetTable(dbname, params)
 	if err != nil {
@@ -60,78 +69,26 @@ func (api *API) GetTable(c echo.Context) error {
 	return c.JSON(http.StatusOK, mp)
 }
 
-func (api *API) AddSubmission(c echo.Context) error {
-
-	type Submission struct {
-		UserId string `json:"UserId"`
-		TaskId string `json:"TaskId"`
-		Answer string `json:"Answer"`
-	}
+func (api *API) Submit(c echo.Context) error {
 
 	s := Submission{}
 
-	body, err := io.ReadAll(c.Request().Body)
+	err := getReqBody(&c, &s)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, map[string]any{"verdict": 3})
 	}
-
-	err = json.Unmarshal(body, &s)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-	}
-
-	c.Logger().Print(s)
 
 	verdict := 0
-
 	if cor, err := api.db.GetTable("Tasks", fmt.Sprintf("id=%v", s.TaskId)); err == nil && cor[0]["ans"] == s.Answer {
-
 		verdict = 1
 	}
 
-	c.Logger().Print(fmt.Sprintf("insert into Submissions (task_id, user, status) values (%v, %v, %v)", s.TaskId, s.UserId, verdict))
+	// c.Logger().Print(fmt.Sprintf("insert into Submissions (task_id, user, status) values (%v, %v, %v)", s.TaskId, s.UserId, verdict))
 
-	_, err = api.db.Exec(fmt.Sprintf("insert into Submissions (task_id, user, status) values (%v, %v, %v)", s.TaskId, s.UserId, verdict))
+	_, err = api.db.Exec(fmt.Sprintf("insert into Submissions (task_id, session_id, status) values (%v, %v, %v)", s.TaskId, s.SessionId, verdict))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, map[string]any{"verdict": 3})
 	}
 
-	return c.JSON(http.StatusOK, map[string]any{"status": "ok", "verdict": verdict})
-}
-
-func (api *API) addObject(c echo.Context) error {
-	dbname := c.Param("dbname")
-
-	mp := make(map[string]interface{})
-
-	body, err := io.ReadAll(c.Request().Body)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"status": err.Error()})
-	}
-
-	err = json.Unmarshal(body, &mp)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"status": err.Error()})
-	}
-
-	nms := ""
-	vls := ""
-	for key, vl := range mp {
-		if len(nms) > 0 {
-			nms += ", "
-		}
-		nms += key
-
-		if len(vls) > 0 {
-			vls += ", "
-		}
-		vls += fmt.Sprint(vl)
-	}
-
-	_, err = api.db.Exec("insert into %v (%v) values (%v)", dbname, nms, vls)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"status": err.Error()})
-	}
-
-	return c.JSON(http.StatusOK, map[string]interface{}{"status": "ok", "object": mp})
+	return c.JSON(http.StatusOK, map[string]any{"verdict": verdict})
 }
