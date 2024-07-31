@@ -1,18 +1,18 @@
 package api
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 
+	mdl "github.com/dub-otrezkov/OschApp/internal/database"
 	"github.com/dub-otrezkov/OschApp/pkg/auth"
 	"github.com/labstack/echo"
 )
 
 type database interface {
-	Exec(query string, args ...any) (sql.Result, error)
+	AddSubmision(mdl.Submission) error
 	GetTable(dbname string, params string) ([]map[string]interface{}, error)
 }
 
@@ -56,7 +56,11 @@ func (api *API) GetTable(c echo.Context) error {
 		if len(params) > 0 {
 			params += " and "
 		}
-		params += fmt.Sprintf(`%v=%v`, k, v[0])
+		if v[0] != "null" {
+			params += fmt.Sprintf(`%v=%v`, k, v[0])
+		} else {
+			params += fmt.Sprintf(`%v is %v`, k, v[0])
+		}
 	}
 
 	// c.Logger().Print(params)
@@ -71,24 +75,31 @@ func (api *API) GetTable(c echo.Context) error {
 
 func (api *API) Submit(c echo.Context) error {
 
-	s := Submission{}
+	type jsub struct {
+		TaskId    int    `json:"TaskId"`
+		SessionId int    `json:"SessionId"`
+		Answer    string `json:"Answer"`
+	}
+
+	s := jsub{}
 
 	err := getReqBody(&c, &s)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]any{"verdict": 3})
 	}
 
-	verdict := 0
+	c.Logger().Print(s)
+
+	res := mdl.Submission{TaskId: s.TaskId, SessionId: s.SessionId, Verdict: 0}
 	if cor, err := api.db.GetTable("Tasks", fmt.Sprintf("id=%v", s.TaskId)); err == nil && cor[0]["ans"] == s.Answer {
-		verdict = 1
+		res.Verdict = 1
 	}
 
-	// c.Logger().Print(fmt.Sprintf("insert into Submissions (task_id, user, status) values (%v, %v, %v)", s.TaskId, s.UserId, verdict))
-
-	_, err = api.db.Exec(fmt.Sprintf("insert into Submissions (task_id, session_id, status) values (%v, %v, %v)", s.TaskId, s.SessionId, verdict))
+	err = api.db.AddSubmision(res)
 	if err != nil {
+		c.Logger().Print(err.Error())
 		return c.JSON(http.StatusBadRequest, map[string]any{"verdict": 3})
 	}
 
-	return c.JSON(http.StatusOK, map[string]any{"verdict": verdict})
+	return c.JSON(http.StatusOK, map[string]any{"verdict": res.Verdict})
 }

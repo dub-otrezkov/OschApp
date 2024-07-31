@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -54,20 +55,23 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 
 		return c.JSON(http.StatusBadRequest, nil)
 	}
-	qr := AuthQuery{}
-	err = json.Unmarshal(body, &qr)
 
 	c.Logger().Print(body)
 
-	for _, el := range body {
-		c.Logger().Print(string(el))
-	}
+	qr := AuthQuery{}
+	err = json.Unmarshal(body, &qr)
+
+	// for _, el := range body {
+	// 	c.Logger().Print(string(el))
+	// }
 
 	if err != nil {
 		c.Logger().Print(err.Error())
 
 		return c.JSON(http.StatusBadRequest, nil)
 	}
+
+	c.Logger().Print(qr)
 
 	// dt, err := a.db.GetTable(a.users_db_name, fmt.Sprintf(`login='%v'`, qr.Username))
 	dt, err := a.db.GetUser(qr.Username)
@@ -102,17 +106,18 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 func (a *Auth) ProcessRegister(c echo.Context) error {
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "err")
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
+
+	c.Request().Body = io.NopCloser(bytes.NewReader(body))
+
 	qr := AuthQuery{}
 	err = json.Unmarshal(body, &qr)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "err")
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	// a.db.Exec(fmt.Sprintf("insert into %v (login, password) values (%v, %v)", a.users_db_name, qr.Username, qr.Password))
 	err = a.db.RegisterUser(qr.Username, qr.Password)
-
 	if err == nil {
 		return a.ProcessLogin(c)
 	}

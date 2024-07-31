@@ -80,6 +80,8 @@ func (d *MySQLdatabase) GetTable(dbname string, params string) ([]map[string]int
 		qry = fmt.Sprintf("select * from %v", dbname)
 	}
 
+	fmt.Println(qry)
+
 	cn, err := d.db.Query(qry)
 	if err != nil {
 		return nil, err
@@ -122,14 +124,35 @@ func (d *MySQLdatabase) GetTable(dbname string, params string) ([]map[string]int
 	return mp, nil
 }
 
+func (db *MySQLdatabase) AddSubmision(s Submission) error {
+	_, err := db.db.Exec(fmt.Sprintf("insert into Submissions (task_id, session_id, status) values (%v, %v, %v)", s.TaskId, s.SessionId, s.Verdict))
+	return err
+}
+
+func (db *MySQLdatabase) AddSession(s Session) (int, error) {
+	var err error
+	var res sql.Result
+	if s.Id != 0 {
+		res, err = db.db.Exec(fmt.Sprintf("insert into Sessions (id, user_id, active, exam_id) values (%v, %v, %v, null)", s.Id, s.UserId, s.Active))
+	} else {
+		res, err = db.db.Exec(fmt.Sprintf("insert into Sessions (user_id, active, exam_id) values (%v, %v, %v)", s.UserId, s.Active, s.ExamId))
+	}
+
+	if err != nil {
+		return 0, err
+	}
+
+	r, err := res.LastInsertId()
+
+	return int(r), err
+}
+
 func (db *MySQLdatabase) GetUser(login string) ([]map[string]interface{}, error) {
 	return db.GetTable("Users", fmt.Sprintf("login='%v'", login))
 }
 
 func (db *MySQLdatabase) RegisterUser(login string, password string) error {
 	res, err := db.Exec(fmt.Sprintf("insert into Users (login, password) values ('%v', '%v')", login, password))
-
-	// fmt.Println(fmt.Sprintf("insert into Users (login, password) values (%v, %v)", login, password))
 
 	if err != nil {
 		return err
@@ -141,7 +164,7 @@ func (db *MySQLdatabase) RegisterUser(login string, password string) error {
 
 	fmt.Println(id)
 
-	_, err = db.Exec(fmt.Sprintf("insert into Sessions (id, user_id) values (%v, %v)", -id, id))
+	_, err = db.AddSession(Session{Id: -int(id), UserId: int(id), Active: true})
 
 	return err
 }

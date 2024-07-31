@@ -40,9 +40,9 @@ var taskApp = {
                 Token: "kkajka",
             },
             body: JSON.stringify({
-                TaskId: taskId,
+                TaskId: parseInt(taskId),
                 Answer: d.get("ans"),
-                SessionId: `-${userId}`,
+                SessionId: -parseInt(userId),
             }),
         })
         .then(resp => {
@@ -177,10 +177,9 @@ var examApp = {
                 Token: "kkajka",
             },
             body: JSON.stringify({
-                TaskId: toString(taskId),
-                UserId: userId,
+                TaskId: taskId,
                 Answer: d.get("ans"),
-                SessionId: "0",
+                SessionId: 0,
             }),
         })
         .then(resp => {
