@@ -16,9 +16,6 @@ var taskApp = {
             if (resp == null) return res;
             
             for (let i = 0; i < resp.length; i++) {
-                // console.log(resp[i]);
-
-
                 let nl = document.createElement("a");
                 nl.className = "tasklink";
                 nl.id = resp[i]["id"];
@@ -33,7 +30,7 @@ var taskApp = {
         return res;
     },
 
-    checkTask: async function (taskId, userId, d) {
+    checkTask: async function (taskId, sessionId, d) {
         return await fetch("/api/submit", {
             method: "POST",
             headers: {
@@ -42,7 +39,7 @@ var taskApp = {
             body: JSON.stringify({
                 TaskId: parseInt(taskId),
                 Answer: d.get("ans"),
-                SessionId: -parseInt(userId),
+                SessionId: parseInt(sessionId),
             }),
         })
         .then(resp => {
@@ -51,7 +48,7 @@ var taskApp = {
         })
     },
     
-    getTask: async function(id, GetCookie, checker) {
+    getTask: async function(id, GetCookie) {
         var res = document.createElement("div");
 
         let file = await fetch(`/api/get/Tasks?id=${id}`, {
@@ -102,14 +99,14 @@ var taskApp = {
 
         ans.append(document.createElement("br"), inp, lbl, document.createElement("br"), btn, vrd);
 
-        let userId = await GetCookie("userId");
+        let sessionId = await GetCookie("session");
 
         ans.addEventListener("submit", e => {
             e.preventDefault();
 
             let d = new FormData(e.target);
 
-            checker(id, userId, d)
+            taskApp.checkTask(id, sessionId, d)
             .then(resp => {
                 if (resp == null) return;
                 if (resp["verdict"] == 0) vrd.innerHTML = "неправильный ответ";
@@ -170,24 +167,6 @@ var examApp = {
         document.getElementById(`task${id}`).style.display = "block";
     },
 
-    storeSubmit: async function (taskId, userId, d) {
-        return await fetch("/api/esubmit", {
-            method: "POST",
-            headers: {
-                Token: "kkajka",
-            },
-            body: JSON.stringify({
-                TaskId: taskId,
-                Answer: d.get("ans"),
-                SessionId: 0,
-            }),
-        })
-        .then(resp => {
-            if (resp.ok) return resp.json();
-            else return null;
-        })
-    },
-
     getExam: async function (id, GetCookie) {
         let res = document.createElement("div");
 
@@ -218,7 +197,7 @@ var examApp = {
 
             btns.append(sttr);
 
-            let task = await taskApp.getTask(exam[i]["taskId"], GetCookie, examApp.storeSubmit);
+            let task = await taskApp.getTask(exam[i]["taskId"], GetCookie);
 
             task.id = `task${i + 1}`;
 

@@ -63,8 +63,6 @@ func (api *API) GetTable(c echo.Context) error {
 		}
 	}
 
-	// c.Logger().Print(params)
-
 	mp, err := api.db.GetTable(dbname, params)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"status": err.Error()})
@@ -96,9 +94,14 @@ func (api *API) Submit(c echo.Context) error {
 	}
 
 	err = api.db.AddSubmision(res)
+
 	if err != nil {
 		c.Logger().Print(err.Error())
 		return c.JSON(http.StatusBadRequest, map[string]any{"verdict": 3})
+	}
+
+	if s.SessionId > 0 {
+		res.Verdict = 2
 	}
 
 	return c.JSON(http.StatusOK, map[string]any{"verdict": res.Verdict})

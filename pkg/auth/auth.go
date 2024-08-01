@@ -61,10 +61,6 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 	qr := AuthQuery{}
 	err = json.Unmarshal(body, &qr)
 
-	// for _, el := range body {
-	// 	c.Logger().Print(string(el))
-	// }
-
 	if err != nil {
 		c.Logger().Print(err.Error())
 
@@ -73,7 +69,6 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 
 	c.Logger().Print(qr)
 
-	// dt, err := a.db.GetTable(a.users_db_name, fmt.Sprintf(`login='%v'`, qr.Username))
 	dt, err := a.db.GetUser(qr.Username)
 	if err != nil {
 		c.Logger().Print(err.Error())

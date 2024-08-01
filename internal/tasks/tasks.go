@@ -36,6 +36,9 @@ func (*TaskApp) taskslistPage(c echo.Context) error {
 }
 
 func (*TaskApp) taskPage(c echo.Context) error {
+	u, _ := c.Cookie("userId")
+	c.SetCookie(&http.Cookie{Name: "session", Value: fmt.Sprintf("-%v", u.Value)})
+
 	return c.Render(http.StatusOK, "task.html", struct {
 		Id string
 	}{
