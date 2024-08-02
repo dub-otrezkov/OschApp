@@ -4,11 +4,10 @@ var taskApp = {
     getTasksList: async function(params) {
         var res = document.createElement("div");
 
+        let sp = {};
+
         await fetch("/api/get/Tasks" + params, {
             method: "GET",
-            headers: {
-                Token: "kkajka"
-            }
         })
         .then(resp => {
             return resp.json();
@@ -23,20 +22,20 @@ var taskApp = {
                 nl.href = `/tasks/${resp[i]["id"]}`;
                 nl.innerText = `задача #${resp[i]["id"]} (тип: ${resp[i]["type"]})`;
                 res.append(nl);
+
+                // sp.append(nl);
+                sp[nl.id] = nl;
             }
 
             return res;
         })
 
-        return res;
-    },
+        let userId = GetCookie("userId");
 
-    parseSolved: async function (userId) {
-        fetch(`api/get/Submissions?status=1&session_id=-${userId}`, {
+        let ok = [], wa = []
+
+        await fetch(`api/get/Submissions?session_id=-${userId}`, {
             method: "GET",
-            headers: {
-                Token: "kkajka",
-            }
         })
         .then(resp => {
             if (!resp.ok) return [];
@@ -45,16 +44,29 @@ var taskApp = {
         .then(resp => {
             resp.map(elem => {
                 console.log(elem);
+
+                if (elem["status"] == '0') wa.push(elem["task_id"]);
+                else ok.push(elem["task_id"]);
             });
+
+            return;
         })
+
+
+        wa.forEach(id => {
+            sp[id].classList += " wa_task";
+        });
+
+        ok.forEach(id => {
+            sp[id].classList += " ok_task";
+        });
+
+        return res;
     },
 
     checkTask: async function (taskId, sessionId, d) {
         return await fetch("/api/submit", {
             method: "POST",
-            headers: {
-                Token: "kkajka",
-            },
             body: JSON.stringify({
                 TaskId: parseInt(taskId),
                 Answer: d.get("ans"),
@@ -72,9 +84,6 @@ var taskApp = {
 
         let file = await fetch(`/api/get/Tasks?id=${id}`, {
             method: "GET",
-            headers: {
-                Token: "kkajka",
-            }
         })
         .then(resp => resp.json())
         .then(resp => {
@@ -118,7 +127,7 @@ var taskApp = {
 
         ans.append(document.createElement("br"), inp, lbl, document.createElement("br"), btn, vrd);
 
-        let sessionId = await GetCookie("session");
+        let sessionId = GetCookie("session");
 
         ans.addEventListener("submit", e => {
             e.preventDefault();
@@ -147,9 +156,6 @@ var examApp = {
 
         await fetch("/api/get/Exams", {
             method: "GET",
-            headers: {
-                Token: "kkajka",
-            },
         })
         .then(resp => {
             if (resp.ok) return resp.json();
@@ -191,9 +197,6 @@ var examApp = {
 
         let exam = (await fetch(`/api/get/Tasklist?examId=${id}`, {
             method: "GET",
-            headers: {
-                Token: "kkajka",
-            },
         })
         .then(resp => {
             if (resp.ok) return resp.json();

@@ -7,12 +7,12 @@ import (
 	"net/http"
 
 	mdl "github.com/dub-otrezkov/OschApp/internal/database"
-	"github.com/dub-otrezkov/OschApp/pkg/auth"
 	"github.com/labstack/echo"
 )
 
 type database interface {
 	AddSubmision(mdl.Submission) error
+	CloseSession(session_id int) error
 	GetTable(dbname string, params string) ([]map[string]interface{}, error)
 }
 
@@ -28,8 +28,9 @@ func New(db database) *API {
 func (api *API) Init(e *echo.Echo) {
 	api.e = e
 
-	api.e.GET("/api/get/:dbname", api.GetTable, auth.CheckAuthAPI)
-	api.e.POST("/api/submit", api.Submit, auth.CheckAuthAPI)
+	api.e.GET("/api/get/:dbname", api.getTable)
+	api.e.POST("/api/submit", api.submit)
+	api.e.POST("/api/finish", api.finishExam)
 
 	api.e.Static("/static", "client")
 	api.e.Static("/files", "files")
@@ -45,7 +46,7 @@ func getReqBody(c *echo.Context, r any) error {
 	return err
 }
 
-func (api *API) GetTable(c echo.Context) error {
+func (api *API) getTable(c echo.Context) error {
 	dbname := c.Param("dbname")
 
 	api.e.Logger.Printf("%v", dbname)
@@ -69,40 +70,4 @@ func (api *API) GetTable(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, mp)
-}
-
-func (api *API) Submit(c echo.Context) error {
-
-	type jsub struct {
-		TaskId    int    `json:"TaskId"`
-		SessionId int    `json:"SessionId"`
-		Answer    string `json:"Answer"`
-	}
-
-	s := jsub{}
-
-	err := getReqBody(&c, &s)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]any{"verdict": 3})
-	}
-
-	c.Logger().Print(s)
-
-	res := mdl.Submission{TaskId: s.TaskId, SessionId: s.SessionId, Verdict: 0}
-	if cor, err := api.db.GetTable("Tasks", fmt.Sprintf("id=%v", s.TaskId)); err == nil && cor[0]["ans"] == s.Answer {
-		res.Verdict = 1
-	}
-
-	err = api.db.AddSubmision(res)
-
-	if err != nil {
-		c.Logger().Print(err.Error())
-		return c.JSON(http.StatusBadRequest, map[string]any{"verdict": 3})
-	}
-
-	if s.SessionId > 0 {
-		res.Verdict = 2
-	}
-
-	return c.JSON(http.StatusOK, map[string]any{"verdict": res.Verdict})
 }

@@ -11,8 +11,19 @@
     color: #292d2e;
 }
 
-#ok_task {
-    background-color: #004a46;
+.nt_task {
+    color: #292d2e;
+    background-color: #ddd;
+}
+
+.wa_task {
+    color: #292d2e;
+    background-color: #f88;
+}
+
+.ok_task {
+    color: #292d2e;
+    background-color: #00c3a2;
 }
 
 .chosen_btn {

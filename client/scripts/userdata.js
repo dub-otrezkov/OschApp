@@ -20,9 +20,6 @@ var UserData = {
 
                 fetch("/exit", {
                     method: "POST",
-                    headers: {
-                        token: "kkajka",
-                    },
                 })
                 .then(resp => {
                     if (resp.ok) {

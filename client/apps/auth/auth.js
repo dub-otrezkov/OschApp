@@ -7,9 +7,6 @@ function Login(form) {
 
     fetch("/login", {
         method: "POST",
-        headers: {
-            token: "kkajka",
-        },
         body: JSON.stringify({
             login: data.get("login"),
             password: data.get("password"),
@@ -33,9 +30,6 @@ function Register(form) {
 
     fetch("/register", {
         method: "POST",
-        headers: {
-            token: "kkajka",
-        },
         body: JSON.stringify({
             login: data.get("login"),
             password: data.get("password"),

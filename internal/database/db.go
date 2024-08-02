@@ -147,6 +147,11 @@ func (db *MySQLdatabase) AddSession(s Session) (int, error) {
 	return int(r), err
 }
 
+func (db *MySQLdatabase) CloseSession(session_id int) error {
+	_, err := db.db.Exec(fmt.Sprintf("update Sessions set active=0 where id=%v", session_id))
+	return err
+}
+
 func (db *MySQLdatabase) GetUser(login string) ([]map[string]interface{}, error) {
 	return db.GetTable("Users", fmt.Sprintf("login='%v'", login))
 }

@@ -29,9 +29,9 @@ func (a *Auth) Init(e *echo.Echo) {
 	e.GET("/login", a.LoginPage, CheckNotLogin)
 	e.GET("/register", a.RegisterPage, CheckNotLogin)
 
-	e.POST("/login", a.ProcessLogin, CheckAuthAPI)
-	e.POST("/register", a.ProcessRegister, CheckAuthAPI)
-	e.POST("/exit", a.ProcessExit, CheckAuthAPI)
+	e.POST("/login", a.ProcessLogin)
+	e.POST("/register", a.ProcessRegister)
+	e.POST("/exit", a.ProcessExit)
 }
 
 func (a *Auth) LoginPage(c echo.Context) error {
