@@ -9,7 +9,9 @@
     <script src="static/scripts/userdata.js"></script>
 </head>
 <body>
-    <script>
+    <script type="module">
+        import UserData from '/static/scripts/userdata.js';
+        
         window.onload = () => {
             UserData.getUserData()
             .then(res => {

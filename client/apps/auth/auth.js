@@ -14,7 +14,6 @@ function Login(form) {
             login: data.get("login"),
             password: data.get("password"),
         }),
-        
     })
     .then(resp => {
         if (resp.ok) return null;

@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/styles/general.css">
     <link rel="stylesheet" href="static/apps/tasks/tasklist.css">
-    <script src="static/apps/tasks/tasks.js"></script>
-    <script src="static/scripts/userdata.js"></script>
 </head>
 <body>
-    <script>
+    <script type="module">
+        import UserData from '/static/scripts/userdata.js';
+        import {taskApp, examApp} from '/static/apps/tasks/tasks.js';
+
         window.onload = () => {
             UserData.getUserData()
             .then(res => {
@@ -36,6 +37,8 @@
                     document.getElementById("links").innerHTML = "";
                     document.getElementById("links").appendChild(res);
                 })
+
+                taskApp.parseSolved(UserData.Ge)
             });
         };
     </script>

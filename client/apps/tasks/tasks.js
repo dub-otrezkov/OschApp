@@ -1,3 +1,4 @@
+import GetCookie from '../../scripts/general.js';
 
 var taskApp = {
     getTasksList: async function(params) {
@@ -30,6 +31,24 @@ var taskApp = {
         return res;
     },
 
+    parseSolved: async function (userId) {
+        fetch(`api/get/Submissions?status=1&session_id=-${userId}`, {
+            method: "GET",
+            headers: {
+                Token: "kkajka",
+            }
+        })
+        .then(resp => {
+            if (!resp.ok) return [];
+            else return resp.json();
+        })
+        .then(resp => {
+            resp.map(elem => {
+                console.log(elem);
+            });
+        })
+    },
+
     checkTask: async function (taskId, sessionId, d) {
         return await fetch("/api/submit", {
             method: "POST",
@@ -48,7 +67,7 @@ var taskApp = {
         })
     },
     
-    getTask: async function(id, GetCookie) {
+    getTask: async function(id) {
         var res = document.createElement("div");
 
         let file = await fetch(`/api/get/Tasks?id=${id}`, {
@@ -167,7 +186,7 @@ var examApp = {
         document.getElementById(`task${id}`).style.display = "block";
     },
 
-    getExam: async function (id, GetCookie) {
+    getExam: async function (id) {
         let res = document.createElement("div");
 
         let exam = (await fetch(`/api/get/Tasklist?examId=${id}`, {
@@ -197,7 +216,7 @@ var examApp = {
 
             btns.append(sttr);
 
-            let task = await taskApp.getTask(exam[i]["taskId"], GetCookie);
+            let task = await taskApp.getTask(exam[i]["taskId"]);
 
             task.id = `task${i + 1}`;
 
@@ -206,3 +225,5 @@ var examApp = {
         return res;
     }
 }
+
+export {taskApp, examApp};

@@ -1,25 +1,7 @@
+import GetCookie from "./general.js";
+
 
 var UserData = {
-    getCookie: async function (cor) {
-        let res = "";
-
-        console.log(document.cookie);
-
-        document.cookie.split("; ").map(
-            rawc => {
-                console.log(rawc);
-
-                let name = rawc.split('=')[0], val = rawc.split('=')[1];
-
-                if (name == cor && val.length != 0) {
-                    res = val;
-                }
-            }
-        );
-
-        return res;
-    },
-
     getUserData: async function () {
         let res = document.createElement("div");
         res.innerHTML = `
@@ -27,7 +9,7 @@ var UserData = {
             <a href="/login">войти</a>/<a href="/register">зарегистрироваться</a>
         `;
 
-        let val = await this.getCookie("user");
+        let val = GetCookie("user");
         // console.log(val);
         if (val.length != 0) {
             let exit = document.createElement("form");
@@ -65,3 +47,5 @@ var UserData = {
         
     }
 }
+
+export default UserData;
