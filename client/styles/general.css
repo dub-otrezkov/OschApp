@@ -36,3 +36,40 @@ a:hover {
     padding: 2%;
     margin-top: 1.5%;
 }
+
+.nt_task {
+    color: #292d2e;
+    background-color: #ddd;
+}
+
+.wa_task {
+    color: #292d2e;
+    background-color: #f88;
+}
+
+.ok_task {
+    color: #292d2e;
+    background-color: #00c3a2;
+}
+
+.ans_tile {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+
+    margin: 1px;
+
+    text-align: center;
+    
+    padding-top: auto;
+    padding-bottom: auto;
+}
+
+td {
+    background-color: #1f2022;
+    margin: 2%;
+    text-align: center;
+
+    min-width: 20px;
+
+}

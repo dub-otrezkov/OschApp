@@ -151,25 +151,3 @@ func (db *MySQLdatabase) CloseSession(session_id int) error {
 	_, err := db.db.Exec(fmt.Sprintf("update Sessions set active=0 where id=%v", session_id))
 	return err
 }
-
-func (db *MySQLdatabase) GetUser(login string) ([]map[string]interface{}, error) {
-	return db.GetTable("Users", fmt.Sprintf("login='%v'", login))
-}
-
-func (db *MySQLdatabase) RegisterUser(login string, password string) error {
-	res, err := db.Exec(fmt.Sprintf("insert into Users (login, password) values ('%v', '%v')", login, password))
-
-	if err != nil {
-		return err
-	}
-	id, err := res.LastInsertId()
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(id)
-
-	_, err = db.AddSession(Session{Id: -int(id), UserId: int(id), Active: true})
-
-	return err
-}

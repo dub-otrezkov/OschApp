@@ -32,10 +32,15 @@ var UserData = {
             button.type = "submit";
             button.innerHTML = "выйти";
 
+            let lk = document.createElement("a")
+            lk.text = "статистика пользователя";
+            lk.href = "/stats";
+
             exit.appendChild(button);
 
             res.innerHTML = `имя пользователя: ${val}`;
-            res.appendChild(exit);
+            
+            res.append(document.createElement("br"), lk, exit);
         }
 
         console.log(res);

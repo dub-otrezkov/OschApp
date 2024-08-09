@@ -5,6 +5,7 @@ import (
 	"github.com/dub-otrezkov/OschApp/internal/app"
 	db "github.com/dub-otrezkov/OschApp/internal/database"
 	"github.com/dub-otrezkov/OschApp/internal/tasks"
+	"github.com/dub-otrezkov/OschApp/internal/userstats"
 	"github.com/dub-otrezkov/OschApp/pkg/auth"
 )
 
@@ -16,12 +17,13 @@ func main() {
 		panic(err)
 	}
 
-	API := api.New(db)
-	auth := auth.New(db)
-	tasks := tasks.New(db)
+	API_app := api.New(db)
+	auth_app := auth.New(db)
+	tasks_app := tasks.New(db)
+	userstats_app := userstats.New()
 
 	port := ":52"
-	a := app.New(port, API, auth, tasks)
+	a := app.New(port, API_app, auth_app, tasks_app, userstats_app)
 
 	a.Run()
 }

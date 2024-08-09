@@ -28,10 +28,14 @@ func New(db database) *API {
 func (api *API) Init(e *echo.Echo) {
 	api.e = e
 
+	// endpoints
 	api.e.GET("/api/get/:dbname", api.getTable)
+	api.e.GET("/api/stats/:user_id", api.getUserStats)
+
 	api.e.POST("/api/submit", api.submit)
 	api.e.POST("/api/finish", api.finishExam)
 
+	// files
 	api.e.Static("/static", "client")
 	api.e.Static("/files", "files")
 }
