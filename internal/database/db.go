@@ -80,8 +80,6 @@ func (d *MySQLdatabase) GetTable(dbname string, params string) ([]map[string]int
 		qry = fmt.Sprintf("select * from %v", dbname)
 	}
 
-	fmt.Println(qry)
-
 	cn, err := d.db.Query(qry)
 	if err != nil {
 		return nil, err

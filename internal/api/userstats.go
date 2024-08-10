@@ -20,38 +20,45 @@ func (api *API) getUserStats(c echo.Context) error {
 	res := make([]map[string]interface{}, len(sessions))
 
 	for i, el := range sessions {
+		c.Logger().Print(el)
+
 		res[i] = make(map[string]interface{})
 
 		res[i]["exam_id"] = int(el["exam_id"].(int64))
 
-		ans := make(map[int64]int)
-
-		tsks, err := api.db.GetTable("Tasklist", fmt.Sprintf("examId=%v", res[i]["exam_id"]))
+		tsks, err := api.db.GetTable("Tasklist", fmt.Sprintf("exam_id=%v", res[i]["exam_id"]))
 		if err != nil {
 			c.Logger().Print(err.Error())
 			return c.JSON(http.StatusBadRequest, make([]int, 0))
-		}
-
-		for _, j := range tsks {
-			ans[j["taskId"].(int64)] = 2
 		}
 
 		subs, err := api.db.GetTable("Submissions", fmt.Sprintf("session_id=%v", el["id"]))
-		c.Logger().Print(subs, el["id"])
 
 		if err != nil {
 			c.Logger().Print(err.Error())
 			return c.JSON(http.StatusBadRequest, make([]int, 0))
 		}
 
-		for _, j := range subs {
-			// c.Logger().Print(j["status"] == 0)
+		st := make(map[int64]int64)
 
-			if j["status"].(int64) == 0 && ans[j["task_id"].(int64)] == 2 {
-				ans[j["task_id"].(int64)] = 0
-			} else if j["status"].(int64) == 1 {
-				ans[j["task_id"].(int64)] = 1
+		for _, j := range subs {
+			st[j["task_id"].(int64)] = max(st[j["task_id"].(int64)], j["status"].(int64))
+
+		}
+
+		c.Logger().Print(tsks)
+
+		ans := make([]map[string]any, 0, len(tsks))
+
+		for _, j := range tsks {
+			vl, ok := st[j["task_id"].(int64)]
+			t1 := -1
+			if ok {
+				t1 = int(vl)
 			}
+
+			ans = append(ans, map[string]any{"id": j["task_id"].(int64), "status": t1})
+
 		}
 
 		res[i]["ans"] = ans

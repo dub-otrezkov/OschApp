@@ -195,7 +195,7 @@ var examApp = {
     getExam: async function (id) {
         let res = document.createElement("div");
 
-        let exam = (await fetch(`/api/get/Tasklist?examId=${id}`, {
+        let exam = (await fetch(`/api/get/Tasklist?exam_id=${id}`, {
             method: "GET",
         })
         .then(resp => {
@@ -219,7 +219,7 @@ var examApp = {
 
             btns.append(sttr);
 
-            let task = await taskApp.getTask(exam[i]["taskId"]);
+            let task = await taskApp.getTask(exam[i]["task_id"]);
 
             task.id = `task${i + 1}`;
 

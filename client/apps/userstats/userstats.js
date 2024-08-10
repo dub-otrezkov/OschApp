@@ -27,13 +27,13 @@ var UserStats = {
                 let dn = document.createElement("tr");
 
                 
-                for (let k in exam["ans"]) {
+                exam["ans"].forEach(i => {
                     
                     {
                         let p = document.createElement("td");
                         let a = document.createElement("a");
-                        a.innerText = k;
-                        a.href = `/tasks/${k}`;
+                        a.innerText = i["id"];
+                        a.href = `/tasks/${i["id"]}`;
                         p.append(a);
 
                         up.append(p);
@@ -42,7 +42,11 @@ var UserStats = {
                     {
                         let p = document.createElement("td");
 
-                        switch(exam["ans"][k]) {
+                        switch(i["status"]) {
+                            case -1:
+                                p.innerText = "-";
+                                p.classList += " nt_task";
+                                break;
                             case 0:
                                 p.innerText = "0";
                                 p.classList += " wa_task";
@@ -51,14 +55,11 @@ var UserStats = {
                                 p.innerText = "1";
                                 p.classList += " ok_task";
                                 break;
-                            case 2:
-                                p.innerText = "-";
-                                p.classList += " nt_task";
                         }
 
                         dn.append(p);
                     }
-                }
+                })
 
                 d.append(up, dn);
 
