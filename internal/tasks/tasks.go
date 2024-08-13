@@ -36,7 +36,7 @@ func (*TaskApp) taskslistPage(c echo.Context) error {
 }
 
 func (*TaskApp) taskPage(c echo.Context) error {
-	u, _ := c.Cookie("userId")
+	u, _ := c.Cookie("user_id")
 	c.SetCookie(&http.Cookie{Name: "session", Value: fmt.Sprintf("-%v", u.Value)})
 
 	return c.Render(http.StatusOK, "task.html", struct {
@@ -52,7 +52,7 @@ func (*TaskApp) examslistPage(c echo.Context) error {
 
 func (t *TaskApp) examPage(c echo.Context) error {
 
-	x, _ := c.Cookie("userId")
+	x, _ := c.Cookie("user_id")
 	userId, _ := strconv.Atoi(x.Value)
 	examId, _ := strconv.Atoi(c.Param("id"))
 

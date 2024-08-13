@@ -30,7 +30,7 @@ var taskApp = {
             return res;
         })
 
-        let userId = GetCookie("userId");
+        let userId = GetCookie("user_id");
 
         let ok = [], wa = []
 
@@ -42,6 +42,8 @@ var taskApp = {
             else return resp.json();
         })
         .then(resp => {
+            if (resp == null) return;
+
             resp.map(elem => {
                 console.log(elem);
 

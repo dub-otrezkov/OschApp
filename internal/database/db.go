@@ -62,6 +62,8 @@ func New() (*MySQLdatabase, error) {
 		return nil, err
 	}
 
+	fmt.Println(cfg)
+
 	return res, nil
 }
 

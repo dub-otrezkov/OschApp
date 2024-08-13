@@ -94,7 +94,7 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 	})
 
 	c.SetCookie(&http.Cookie{
-		Name:  "userId",
+		Name:  "user_id",
 		Value: fmt.Sprint(cor["id"]),
 	})
 

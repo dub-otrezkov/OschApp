@@ -4,7 +4,7 @@ var UserStats = {
     getStats: async function () {
         let res = document.createElement("div");
 
-        let userId = GetCookie("userId")
+        let userId = GetCookie("user_id")
 
         await fetch(`/api/stats/${userId}`, {
             method: "GET",
