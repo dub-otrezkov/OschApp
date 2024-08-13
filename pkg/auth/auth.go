@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 
+	hsh "github.com/dub-otrezkov/OschApp/pkg/hasher"
 	"github.com/labstack/echo"
 )
 
@@ -69,6 +70,8 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 
 	c.Logger().Print(qr)
 
+	qr.Password = hsh.CalcSha256(qr.Password)
+
 	dt, err := a.db.GetUser(qr.Username)
 	if err != nil {
 		c.Logger().Print(err.Error())
@@ -111,6 +114,8 @@ func (a *Auth) ProcessRegister(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
+
+	qr.Password = hsh.CalcSha256(qr.Password)
 
 	err = a.db.RegisterUser(qr.Username, qr.Password)
 	if err == nil {

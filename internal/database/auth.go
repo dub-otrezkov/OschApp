@@ -1,6 +1,8 @@
 package db
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (db *MySQLdatabase) GetUser(login string) ([]map[string]interface{}, error) {
 	return db.GetTable("Users", fmt.Sprintf("login='%v'", login))
