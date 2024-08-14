@@ -2,7 +2,6 @@ package auth
 
 import (
 	"bytes"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,7 +12,6 @@ import (
 )
 
 type database interface {
-	Exec(query string, args ...any) (sql.Result, error)
 	GetUser(login string) ([]map[string]interface{}, error)
 	RegisterUser(login string, password string) error
 }
