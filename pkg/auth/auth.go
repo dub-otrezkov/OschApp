@@ -12,7 +12,7 @@ import (
 )
 
 type database interface {
-	GetUser(login string) ([]map[string]interface{}, error)
+	GetUser(login string) (map[string]interface{}, error)
 	RegisterUser(login string, password string) error
 }
 
@@ -70,17 +70,11 @@ func (a *Auth) ProcessLogin(c echo.Context) error {
 
 	qr.Password = hsh.CalcSha256(qr.Password)
 
-	dt, err := a.db.GetUser(qr.Username)
+	cor, err := a.db.GetUser(qr.Username)
 	if err != nil {
 		c.Logger().Print(err.Error())
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-
-	if len(dt) == 0 {
-		return c.JSON(http.StatusBadRequest, "no such user")
-	}
-
-	cor := dt[0]
 
 	if cor["password"] != qr.Password {
 		return c.JSON(http.StatusBadRequest, "wrong password")

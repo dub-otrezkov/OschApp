@@ -4,8 +4,21 @@ import (
 	"fmt"
 )
 
-func (db *MySQLdatabase) GetUser(login string) ([]map[string]interface{}, error) {
-	return db.GetTable("Users", fmt.Sprintf("login='%v'", login))
+type NoUserErr struct{}
+
+func (NoUserErr) Error() string {
+	return "requested user not found"
+}
+
+func (db *MySQLdatabase) GetUser(login string) (map[string]interface{}, error) {
+	t, err := db.GetTable("Users", fmt.Sprintf("login='%v'", login))
+	if err != nil {
+		return nil, err
+	}
+	if len(t) == 0 {
+		return nil, NoUserErr{}
+	}
+	return t[0], nil
 }
 
 func (db *MySQLdatabase) RegisterUser(login string, password string) error {
